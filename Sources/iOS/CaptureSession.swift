@@ -130,6 +130,14 @@ public protocol CaptureSessionDelegate {
 	:name:	captureDidFinishRecordingToOutputFileAtURL
 	*/
 	optional func captureDidFinishRecordingToOutputFileAtURL(capture: CaptureSession, captureOutput: AVCaptureFileOutput, outputFileURL: NSURL, fromConnections connections: [AnyObject], error: NSError!)
+    
+    /**
+     captureSession did retrieve metadata objects, ex: QRCode.
+     
+     - parameter captureSession:  CaptureSession
+     - parameter metadataObjects: MetaData retrieved.
+     */
+    optional func captureSession(captureSession: CaptureSession!, didOutputMetadataObjects metadataObjects: [AnyObject]!)
 }
 
 @objc(CaptureSession)
@@ -363,18 +371,19 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 	:name:	sessionPreset
 	*/
 	public var currentVideoOrientation: AVCaptureVideoOrientation {
-		var orientation: AVCaptureVideoOrientation
-		switch UIDevice.currentDevice().orientation {
-		case .Portrait:
-			orientation = .Portrait
-		case .LandscapeRight:
-			orientation = .LandscapeLeft
-		case .PortraitUpsideDown:
-			orientation = .PortraitUpsideDown
-		default:
-			orientation = .LandscapeRight
-		}
-		return orientation
+        return .Portrait
+//		var orientation: AVCaptureVideoOrientation
+//		switch UIDevice.currentDevice().orientation {
+//		case .Portrait:
+//			orientation = .Portrait
+//		case .LandscapeRight:
+//			orientation = .LandscapeLeft
+//		case .PortraitUpsideDown:
+//			orientation = .PortraitUpsideDown
+//		default:
+//			orientation = .LandscapeRight
+//		}
+//		return orientation
 	}
 	
 	/**
@@ -731,4 +740,59 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		}
 		return nil
 	}
+}
+
+
+/**
+ CaptureSession + QRCodeScan specific extension.
+ */
+extension CaptureSession : AVCaptureMetadataOutputObjectsDelegate {
+    
+    public func prepareMetadataOutput() {
+        
+        NSLog(" **** start")
+        
+        // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
+        let captureMetadataOutput = AVCaptureMetadataOutput()
+        
+        NSLog("   before add captureMetadataOutput")
+        
+        if self.session.canAddOutput(captureMetadataOutput) == false {
+            NSLog("   cannot add output! return")
+            return
+        }
+        
+        self.session.addOutput(captureMetadataOutput)
+        
+        NSLog("   after add captureMetadataOutput")
+        
+        // Set delegate and use the default dispatch queue to execute the call back
+        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
+        
+        NSLog("   after setMetadataObjectsDelegate")
+        
+        let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]
+        
+        // Detect all the supported bar code
+        captureMetadataOutput.metadataObjectTypes = supportedBarCodes
+        
+        NSLog("   after metadataObjectTypes")
+        
+        NSLog(" **** end")
+        
+    }
+    
+    public func startCaptureQRCode() {
+        
+        // Start video capture
+        startSession()
+        //        self.session.startRunning()
+        
+    }
+    
+    public func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
+        
+        self.delegate?.captureSession?(self, didOutputMetadataObjects: metadataObjects)
+        
+    }
 }
