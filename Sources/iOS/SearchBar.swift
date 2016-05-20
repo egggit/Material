@@ -120,6 +120,8 @@ public class SearchBar : BarView {
 	/// Clears the textField text.
 	internal func handleClearButton() {
 		textField.text = nil
+        
+        NSNotificationCenter.defaultCenter().postNotificationName("SearchBarClearButtonDidPressed", object: nil)        
 	}
 	
 	/// Prepares the textField.
