@@ -497,6 +497,8 @@ public class TextField : UITextField {
 			placeholderLabel.frame.origin.y = -placeholderLabel.frame.size.height
 			placeholderLabel.textColor = placeholderColor
 		} else {
+            // Move before origin change due to calculation error when align to right.
+            placeholderLabel.frame.size.width = width * 0.75
 			switch textAlignment {
 			case .Left, .Natural:
 				placeholderLabel.frame.origin.x = 0
@@ -506,7 +508,7 @@ public class TextField : UITextField {
 				placeholderLabel.center.x = width / 2
 			default:break
 			}
-			placeholderLabel.frame.size.width = width * 0.75
+//			placeholderLabel.frame.size.width = width * 0.75
 		}
 	}
 	
