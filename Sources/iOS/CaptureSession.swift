@@ -90,50 +90,50 @@ public protocol CaptureSessionDelegate {
 	:name:	captureSessionFailedWithError
 	*/
 	optional func captureSessionFailedWithError(capture: CaptureSession, error: NSError)
-	
+
 	/**
 	:name:	captureSessionDidSwitchCameras
 	*/
 	optional func captureSessionDidSwitchCameras(capture: CaptureSession, position: AVCaptureDevicePosition)
-	
+
 	/**
 	:name:	captureSessionWillSwitchCameras
 	*/
 	optional func captureSessionWillSwitchCameras(capture: CaptureSession, position: AVCaptureDevicePosition)
-	
+
 	/**
 	:name:	captureStillImageAsynchronously
 	*/
 	optional func captureStillImageAsynchronously(capture: CaptureSession, image: UIImage)
-	
+
 	/**
 	:name:	captureStillImageAsynchronouslyFailedWithError
 	*/
 	optional func captureStillImageAsynchronouslyFailedWithError(capture: CaptureSession, error: NSError)
-	
+
 	/**
 	:name:	captureCreateMovieFileFailedWithError
 	*/
 	optional func captureCreateMovieFileFailedWithError(capture: CaptureSession, error: NSError)
-	
+
 	/**
 	:name:	captureMovieFailedWithError
 	*/
 	optional func captureMovieFailedWithError(capture: CaptureSession, error: NSError)
-	
+
 	/**
 	:name:	captureDidStartRecordingToOutputFileAtURL
 	*/
 	optional func captureDidStartRecordingToOutputFileAtURL(capture: CaptureSession, captureOutput: AVCaptureFileOutput, fileURL: NSURL, fromConnections connections: [AnyObject])
-	
+
 	/**
 	:name:	captureDidFinishRecordingToOutputFileAtURL
 	*/
 	optional func captureDidFinishRecordingToOutputFileAtURL(capture: CaptureSession, captureOutput: AVCaptureFileOutput, outputFileURL: NSURL, fromConnections connections: [AnyObject], error: NSError!)
-    
+
     /**
      captureSession did retrieve metadata objects, ex: QRCode.
-     
+
      - parameter captureSession:  CaptureSession
      - parameter metadataObjects: MetaData retrieved.
      */
@@ -146,61 +146,61 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 	:name:	sessionQueue
 	*/
 	private lazy var sessionQueue: dispatch_queue_t = dispatch_queue_create("io.material.CaptureSession", DISPATCH_QUEUE_SERIAL)
-	
+
 	/**
 	:name:	activeVideoInput
 	*/
 	private var activeVideoInput: AVCaptureDeviceInput?
-	
+
 	/**
 	:name:	activeAudioInput
 	*/
 	private var activeAudioInput: AVCaptureDeviceInput?
-	
+
 	/**
 	:name:	imageOutput
 	*/
 	private lazy var imageOutput: AVCaptureStillImageOutput = AVCaptureStillImageOutput()
-	
+
 	/**
 	:name:	movieOutput
 	*/
 	private lazy var movieOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
-	
+
 	/**
 	:name:	movieOutputURL
 	*/
 	private var movieOutputURL: NSURL?
-	
+
 	/**
 	:name: session
 	*/
 	internal lazy var session: AVCaptureSession = AVCaptureSession()
-	
+
 	/**
 	:name:	isRunning
 	*/
 	public private(set) lazy var isRunning: Bool = false
-	
+
 	/**
 	:name:	isRecording
 	*/
 	public private(set) lazy var isRecording: Bool = false
-	
+
 	/**
 	:name:	recordedDuration
 	*/
 	public var recordedDuration: CMTime {
 		return movieOutput.recordedDuration
 	}
-	
+
 	/**
 	:name:	activeCamera
 	*/
 	public var activeCamera: AVCaptureDevice? {
 		return activeVideoInput?.device
 	}
-	
+
 	/**
 	:name:	inactiveCamera
 	*/
@@ -215,56 +215,56 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		}
 		return device
 	}
-	
+
 	/**
 	:name:	cameraCount
 	*/
 	public var cameraCount: Int {
 		return AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo).count
 	}
-	
+
 	/**
 	:name:	canSwitchCameras
 	*/
 	public var canSwitchCameras: Bool {
 		return 1 < cameraCount
 	}
-	
+
 	/**
 	:name:	caneraSupportsTapToFocus
 	*/
 	public var cameraSupportsTapToFocus: Bool {
 		return nil == activeCamera ? false : activeCamera!.focusPointOfInterestSupported
 	}
-	
+
 	/**
 	:name:	cameraSupportsTapToExpose
 	*/
 	public var cameraSupportsTapToExpose: Bool {
 		return nil == activeCamera ? false : activeCamera!.exposurePointOfInterestSupported
 	}
-	
+
 	/**
 	:name:	cameraHasFlash
 	*/
 	public var cameraHasFlash: Bool {
 		return nil == activeCamera ? false : activeCamera!.hasFlash
 	}
-	
+
 	/**
 	:name:	cameraHasTorch
 	*/
 	public var cameraHasTorch: Bool {
 		return nil == activeCamera ? false : activeCamera!.hasTorch
 	}
-	
+
 	/**
 	:name:	cameraPosition
 	*/
 	public var cameraPosition: AVCaptureDevicePosition? {
 		return activeCamera?.position
 	}
-	
+
 	/**
 	:name:	focusMode
 	*/
@@ -295,7 +295,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	flashMode
 	*/
@@ -326,7 +326,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	torchMode
 	*/
@@ -357,7 +357,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	sessionPreset
 	*/
@@ -366,7 +366,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			session.sessionPreset = CaptureSessionPresetToString(sessionPreset)
 		}
 	}
-	
+
 	/**
 	:name:	sessionPreset
 	*/
@@ -385,12 +385,12 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 //		}
 //		return orientation
 	}
-	
+
 	/**
 	:name:	delegate
 	*/
 	public weak var delegate: CaptureSessionDelegate?
-	
+
 	/**
 	:name:	init
 	*/
@@ -399,7 +399,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		super.init()
 		prepareSession()
 	}
-	
+
 	/**
 	:name:	startSession
 	*/
@@ -410,7 +410,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	startSession
 	*/
@@ -421,7 +421,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	switchCameras
 	*/
@@ -433,7 +433,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 					let videoInput: AVCaptureDeviceInput? = try AVCaptureDeviceInput(device: self.inactiveCamera!)
 					self.session.beginConfiguration()
 					self.session.removeInput(self.activeVideoInput)
-					
+
 					if self.session.canAddInput(videoInput) {
 						self.session.addInput(videoInput)
 						self.activeVideoInput = videoInput
@@ -448,35 +448,35 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	isFocusModeSupported
 	*/
 	public func isFocusModeSupported(focusMode: AVCaptureFocusMode) -> Bool {
 		return activeCamera!.isFocusModeSupported(focusMode)
 	}
-	
+
 	/**
 	:name:	isExposureModeSupported
 	*/
 	public func isExposureModeSupported(exposureMode: AVCaptureExposureMode) -> Bool {
 		return activeCamera!.isExposureModeSupported(exposureMode)
 	}
-	
+
 	/**
 	:name:	isFlashModeSupported
 	*/
 	public func isFlashModeSupported(flashMode: AVCaptureFlashMode) -> Bool {
 		return activeCamera!.isFlashModeSupported(flashMode)
 	}
-	
+
 	/**
 	:name:	isTorchModeSupported
 	*/
 	public func isTorchModeSupported(torchMode: AVCaptureTorchMode) -> Bool {
 		return activeCamera!.isTorchModeSupported(torchMode)
 	}
-	
+
 	/**
 	:name:	focusAtPoint
 	*/
@@ -503,7 +503,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			delegate?.captureSessionFailedWithError?(self, error: e)
 		}
 	}
-	
+
 	/**
 	:name:	exposeAtPoint
 	*/
@@ -533,7 +533,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			delegate?.captureSessionFailedWithError?(self, error: e)
 		}
 	}
-	
+
 	/**
 	:name:	observeValueForKeyPath
 	*/
@@ -556,7 +556,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)
 		}
 	}
-	
+
 	/**
 	:name:	resetFocusAndExposureModes
 	*/
@@ -580,7 +580,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			delegate?.captureSessionFailedWithError?(self, error: e)
 		}
 	}
-	
+
 	/**
 	:name:	captureStillImage
 	*/
@@ -599,7 +599,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	startRecording
 	*/
@@ -620,7 +620,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 							self.delegate?.captureSessionFailedWithError?(self, error: e)
 						}
 					}
-					
+
 					self.movieOutputURL = self.uniqueURL()
 					if let v: NSURL = self.movieOutputURL {
 						self.movieOutput.startRecordingToOutputFileURL(v, recordingDelegate: self)
@@ -629,7 +629,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			}
 		}
 	}
-	
+
 	/**
 	:name:	stopRecording
 	*/
@@ -638,7 +638,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			movieOutput.stopRecording()
 		}
 	}
-	
+
 	/**
 	:name:	captureOutput
 	*/
@@ -646,7 +646,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		isRecording = true
 		delegate?.captureDidStartRecordingToOutputFileAtURL?(self, captureOutput: captureOutput, fileURL: fileURL, fromConnections: connections)
 	}
-	
+
 	/**
 	:name:	captureOutput
 	*/
@@ -654,7 +654,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		isRecording = false
 		delegate?.captureDidFinishRecordingToOutputFileAtURL?(self, captureOutput: captureOutput, outputFileURL: outputFileURL, fromConnections: connections, error: error)
 	}
-	
+
 	/**
 	:name:	prepareSession
 	*/
@@ -664,7 +664,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		prepareImageOutput()
 		prepareMovieOutput()
 	}
-	
+
 	/**
 	:name:	prepareVideoInput
 	*/
@@ -678,7 +678,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			delegate?.captureSessionFailedWithError?(self, error: e)
 		}
 	}
-	
+
 	/**
 	:name:	prepareAudioInput
 	*/
@@ -692,7 +692,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			delegate?.captureSessionFailedWithError?(self, error: e)
 		}
 	}
-	
+
 	/**
 	:name:	prepareImageOutput
 	*/
@@ -702,7 +702,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			session.addOutput(imageOutput)
 		}
 	}
-	
+
 	/**
 	:name:	prepareMovieOutput
 	*/
@@ -711,7 +711,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 			session.addOutput(movieOutput)
 		}
 	}
-	
+
 	/**
 	:name:	cameraWithPosition
 	*/
@@ -724,7 +724,7 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
 		}
 		return nil
 	}
-	
+
 	/**
 	:name:	uniqueURL
 	*/
@@ -747,52 +747,41 @@ public class CaptureSession : NSObject, AVCaptureFileOutputRecordingDelegate {
  CaptureSession + QRCodeScan specific extension.
  */
 extension CaptureSession : AVCaptureMetadataOutputObjectsDelegate {
-    
+
     public func prepareMetadataOutput() {
-        
-        NSLog(" **** start")
-        
+
+
         // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
         let captureMetadataOutput = AVCaptureMetadataOutput()
-        
-        NSLog("   before add captureMetadataOutput")
-        
+
         if self.session.canAddOutput(captureMetadataOutput) == false {
             NSLog("   cannot add output! return")
             return
         }
-        
+
         self.session.addOutput(captureMetadataOutput)
-        
-        NSLog("   after add captureMetadataOutput")
-        
+
         // Set delegate and use the default dispatch queue to execute the call back
         captureMetadataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
-        
-        NSLog("   after setMetadataObjectsDelegate")
-        
+
         let supportedBarCodes = [AVMetadataObjectTypeQRCode, AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeUPCECode, AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeAztecCode]
-        
+
         // Detect all the supported bar code
         captureMetadataOutput.metadataObjectTypes = supportedBarCodes
-        
-        NSLog("   after metadataObjectTypes")
-        
-        NSLog(" **** end")
-        
+
     }
-    
+
     public func startCaptureQRCode() {
-        
+
         // Start video capture
         startSession()
         //        self.session.startRunning()
-        
+
     }
-    
+
     public func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
-        
+
         self.delegate?.captureSession?(self, didOutputMetadataObjects: metadataObjects)
-        
+
     }
 }
